@@ -3,14 +3,15 @@ import os
 import tempfile
 import json
 
-storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
+
 def read(storage_path):
     if not os.path.exists(storage_path):
         return {}
     with open(storage_path, 'r') as file:
         raw_data = file.read()
         if raw_data:
-            result = json.loads(raw_data)
+            # result = json.loads(raw_data)
+            result = 'da'
         else:
             result = {}
         return result
@@ -23,18 +24,26 @@ def parse():
     parser.add_argument('--key', type=str)
     parser.add_argument('--value', type=str)
     args = parser.parse_args()
-    if args.key and args.value:
-        pass
+    return args
 
 def write(file, key, value):
-    with open(file, w) as file:
-        data[key] = value
-        file.write(json.dump(data))
+    with open(file, 'w') as file:
+
+
+        file.write('Hello')
 
 
 def put(storage_path, key, value):
     data = storage_path.read()
-    if key in data:
+    data[key] = value
+    print(data)
 
-parse()
-read(storage_path)
+
+
+def get(storage_path, key):
+    pass
+if __name__ == '__main__':
+    storage_path = os.path.join(tempfile.gettempdir(), 'storage.data')
+    print(storage_path)
+    write(storage_path,'500','599')
+    print(read(storage_path))
