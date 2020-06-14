@@ -6,7 +6,7 @@ class CarBase:
     def __init__(self, brand, photo_file_name, carrying):
         self.brand = brand
         self.photo_file_name = photo_file_name
-        self.carrying = carrying
+        self.carrying = float(carrying)
 
     def get_photo_file_ext(self):
         ext = os.path.splitext(self.photo_file_name)[-1]
@@ -16,7 +16,22 @@ class CarBase:
         available = ['.jpg', '.jpeg', '.png', '.gif']
         if self.get_photo_file_ext() not in available:
             raise ValueError
+        else:
+            return True
 
+    def validate_input(self, value):
+        if value == '':
+            raise ValueError
+        else:
+            return value
+
+    @classmethod
+    def create(cls, car_type, *args):
+        car_dict = {'car':Car,
+                    'truck': Truck,
+                    'spec_machine':SpecMachine}
+        create = car_dict[car_type]
+        return create(*args)
     @staticmethod
     def read_csv(filename):
         with open(csv_filename) as csv_fd:
@@ -72,3 +87,7 @@ new = Truck('Nissan', 'car.jpeg', 500, '4x1xjo')
 
 print(new.brand, new.carrying, new.body_height)
 print(new.get_body_volume())
+print(new.car_type)
+print(new.validate_input('asdf'))
+print(CarBase.create('truck','nissan','car.jpeg',500,'4x1x1'))
+print(CarBase.create('car','nissasdfan','cafr.jpeg',5010,'4x1x1'))
