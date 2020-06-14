@@ -12,6 +12,11 @@ class CarBase:
         ext = os.path.splitext(self.photo_file_name)[-1]
         return ext
 
+    def validate_photo(self):
+        available = ['.jpg', '.jpeg', '.png', '.gif']
+        if self.get_photo_file_ext() not in available:
+            raise ValueError
+
     @staticmethod
     def read_csv(filename):
         with open(csv_filename) as csv_fd:
@@ -25,6 +30,8 @@ class Car(CarBase):
     def __init__(self, brand, photo_file_name, carrying, passenger_seats_count):
         super().__init__(brand, photo_file_name, carrying)
         self.passenger_seats_count = passenger_seats_count
+
+    car_type = 'car'
 
 
 class Truck(CarBase):
@@ -40,6 +47,8 @@ class Truck(CarBase):
             self.body_length = 0
             self.body_width = 0
 
+    car_type = 'truck'
+
     def get_body_volume(self):
         volume = self.body_height * self.body_length * self.body_width
         return volume
@@ -47,7 +56,10 @@ class Truck(CarBase):
 
 class SpecMachine(CarBase):
     def __init__(self, brand, photo_file_name, carrying, extra):
-        pass
+        super().__init__(brand, photo_file_name, carrying)
+        self.extra = extra
+
+    car_type = 'spec_machine'
 
 
 def get_car_list(csv_filename):
