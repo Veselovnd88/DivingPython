@@ -19,7 +19,8 @@ class CarBase:
         else:
             return True
 
-    def validate_input(self, value):
+    @staticmethod
+    def validate_input(value):
         if value == '':
             raise ValueError
         else:
@@ -27,18 +28,11 @@ class CarBase:
 
     @classmethod
     def create(cls, car_type, *args):
-        car_dict = {'car':Car,
+        car_dict = {'car': Car,
                     'truck': Truck,
-                    'spec_machine':SpecMachine}
+                    'spec_machine': SpecMachine}
         create = car_dict[car_type]
         return create(*args)
-    @staticmethod
-    def read_csv(filename):
-        with open(csv_filename) as csv_fd:
-            reader = csv.reader(csv_fd, delimiter=';')
-            next(reader)  # пропускаем заголовок
-            for row in reader:
-                print(row)
 
 
 class Car(CarBase):
@@ -76,9 +70,29 @@ class SpecMachine(CarBase):
 
     car_type = 'spec_machine'
 
+def validity(lst:list):
+    req_fields = []
+    try:
+        check_params = [lst[0], lst[1], lst[3], lst[5]]
+        for i in check_params:
+            if CarBase.validate_input(i):
+                req_fields.append(i)
+        return req_fields
+    except IndexError:
+        pass
+
+
+
+
 
 def get_car_list(csv_filename):
     car_list = []
+    with open(csv_filename, encoding='utf-8') as csv_fd:
+        reader = csv.reader(csv_fd, delimiter=';')
+        next(reader)  # пропускаем заголовок
+        for row in reader:
+            print(row)
+            print(validity(row))
 
     return car_list
 
@@ -89,5 +103,6 @@ print(new.brand, new.carrying, new.body_height)
 print(new.get_body_volume())
 print(new.car_type)
 print(new.validate_input('asdf'))
-print(CarBase.create('truck','nissan','car.jpeg',500,'4x1x1'))
-print(CarBase.create('car','nissasdfan','cafr.jpeg',5010,'4x1x1'))
+print(CarBase.create('truck', 'nissan', 'car.jpeg', 500, '4x1x1'))
+print(CarBase.create('car', 'nissasdfan', 'cafr.jpeg', 5010, '4x1x1'))
+get_car_list('csv_cars.csv')
