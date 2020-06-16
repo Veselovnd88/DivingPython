@@ -4,20 +4,22 @@ import os
 
 class CarBase:
     def __init__(self, brand, photo_file_name, carrying):
-        self.brand = brand
-        self.photo_file_name = photo_file_name
-        self.carrying = float(carrying)
+        self.brand = self.validate_input(brand)
+        self.photo_file_name = self.validate_photo(photo_file_name)
+        self.carrying = float(self.validate_input(carrying))
 
     def get_photo_file_ext(self):
         ext = os.path.splitext(self.photo_file_name)[-1]
         return ext
 
-    def validate_photo(self):
+    def validate_photo(self, filename:str):
         available = ['.jpg', '.jpeg', '.png', '.gif']
-        if self.get_photo_file_ext() not in available:
-            raise ValueError
-        else:
-            return True
+        for i in available:
+            if filename.endswith(i):
+                print(filename)
+                return filename
+
+        raise ValueError
 
     @staticmethod
     def validate_input(value):
@@ -27,37 +29,37 @@ class CarBase:
             return value
 
     @classmethod
-    def create(cls, car_type, *args):
-        car_dict = {'car': Car,
-                    'truck': Truck,
-                    'spec_machine': SpecMachine}
-        create = car_dict[car_type]
-        return create(*args)
+    def create(cls, data):
+
+        params = []
+        for i in data:
+            params.append(i)
+        return cls(*params)
 
 
 class Car(CarBase):
     def __init__(self, brand, photo_file_name, carrying, passenger_seats_count):
         super().__init__(brand, photo_file_name, carrying)
-        self.passenger_seats_count = passenger_seats_count
-
+        self.passenger_seats_count = int(self.validate_input(passenger_seats_count))
+    required = [1, 3, 5, 2]
     car_type = 'car'
 
 
 class Truck(CarBase):
     def __init__(self, brand, photo_file_name, carrying, body_whl):
         super().__init__(brand, photo_file_name, carrying)
-        self.body_whl = body_whl
+        self.body_whl = self.validate_input(body_whl)
         try:
             self.body_length = float(self.body_whl.split('x')[2])
             self.body_width = float(self.body_whl.split('x')[0])
             self.body_height = float(self.body_whl.split('x')[1])
         except ValueError:
-            self.body_height = 0
-            self.body_length = 0
-            self.body_width = 0
+            self.body_height = 0.0
+            self.body_length = 0.0
+            self.body_width = 0.0
 
     car_type = 'truck'
-
+    required = [1,3,5,4]
     def get_body_volume(self):
         volume = self.body_height * self.body_length * self.body_width
         return volume
@@ -66,20 +68,10 @@ class Truck(CarBase):
 class SpecMachine(CarBase):
     def __init__(self, brand, photo_file_name, carrying, extra):
         super().__init__(brand, photo_file_name, carrying)
-        self.extra = extra
-
+        self.extra = self.validate_input(extra)
+    required = [1,3,5,6]
     car_type = 'spec_machine'
 
-def validity(lst:list):
-    req_fields = []
-    try:
-        check_params = [lst[0], lst[1], lst[3], lst[5]]
-        for i in check_params:
-            if CarBase.validate_input(i):
-                req_fields.append(i)
-        return req_fields
-    except IndexError:
-        pass
 
 
 
@@ -89,20 +81,31 @@ def get_car_list(csv_filename):
     car_list = []
     with open(csv_filename, encoding='utf-8') as csv_fd:
         reader = csv.reader(csv_fd, delimiter=';')
+
         next(reader)  # пропускаем заголовок
+        car_dict = {'car': Car,
+                    'truck': Truck,
+                    'spec_machine': SpecMachine}
         for row in reader:
-            print(row)
-            print(validity(row))
+            try:
+                car_class = car_dict[row[0]]
+                params = []
+                for i in car_class.required:
+                    params.append(row[i])
+                print(params)
+                newitem = car_class.create(params)
+                print(newitem)
+                car_list.append(newitem)
+            except Exception:
+                pass
+
 
     return car_list
 
 
-new = Truck('Nissan', 'car.jpeg', 500, '4x1xjo')
 
-print(new.brand, new.carrying, new.body_height)
-print(new.get_body_volume())
-print(new.car_type)
-print(new.validate_input('asdf'))
-print(CarBase.create('truck', 'nissan', 'car.jpeg', 500, '4x1x1'))
-print(CarBase.create('car', 'nissasdfan', 'cafr.jpeg', 5010, '4x1x1'))
-get_car_list('csv_cars.csv')
+
+
+
+
+print(get_car_list('csv_cars.csv'))
