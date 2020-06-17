@@ -16,7 +16,7 @@ class CarBase:
         available = ['.jpg', '.jpeg', '.png', '.gif']
         for i in available:
             if filename.endswith(i):
-                print(filename)
+
                 return filename
 
         raise ValueError
@@ -92,9 +92,8 @@ def get_car_list(csv_filename):
                 params = []
                 for i in car_class.required:
                     params.append(row[i])
-                print(params)
                 newitem = car_class.create(params)
-                print(newitem)
+
                 car_list.append(newitem)
             except Exception:
                 pass
