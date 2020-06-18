@@ -1,5 +1,1 @@
-hello my friend
-asdf
-asdf
-asdf
-sdf
+Tail length 100
